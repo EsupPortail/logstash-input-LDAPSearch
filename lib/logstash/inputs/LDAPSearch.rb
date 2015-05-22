@@ -4,35 +4,75 @@ require "logstash/namespace"
 require "stud/interval"
 require "socket" # for Socket.gethostname
 
-# Generate a repeating message.
+# Perform an LDAP Search
 #
-# This plugin is intented only as an example.
+# Example:
+#
+#     input {
+#        LDAPSearch {
+#         host => "myLDAPServer"
+#         dn => "myDN"
+#         password => "myPassword"
+#         filter => "myldapfilter"
+#         base => "ou=people,dc=univ,dc=fr"
+#         attrs => ['myattrubteslist']
+#        }
+#    }
 
-class LogStash::Inputs::Example < LogStash::Inputs::Base
-  config_name "example"
+class LogStash::Inputs::LDAPSearch < LogStash::Inputs::Base
+  config_name "LDAPSearch"
 
   # If undefined, Logstash will complain, even if codec is unused.
   default :codec, "plain" 
 
-  # The message string to use in the event.
-  config :message, :validate => :string, :default => "Hello World!"
-
-  # Set how frequently messages should be sent.
-  #
-  # The default, `1`, means send a message every second.
-  config :interval, :validate => :number, :default => 1
+  # LDAP parameters
+  config :host, :validate => :string, :required => true
+  config :dn, :validate => :string, :required => true
+  config :password, :validate => :password, :required => true
+  config :filter, :validate => :string, :required => true
+  config :base, :validate => :string, :required => true
+  config :port, :validate => :number, :default => 389
+  config :attrs, :validate => :array, :default => ['uid']
 
   public
   def register
-    @host = Socket.gethostname
+    require "base64"
+    require "ldap"
   end # def register
 
+  public
   def run(queue)
-    Stud.interval(@interval) do
-      event = LogStash::Event.new("message" => @message, "host" => @host)
-      decorate(event)
-      queue << event
-    end # loop
+      
+    @host = Socket.gethostbyname(@host).first
+    #attrs = ['uid', 'sn', 'cn', 'eduPersonPrimaryAffiliation']
+    scope = LDAP::LDAP_SCOPE_SUBTREE #LDAP::LDAP_SCOPE_ONELEVEL
+    conn = LDAP::Conn.new(@host, @port)
+    conn.bind(@dn, @password.value)
+    begin
+      @logger.debug("Executing LDAP search base='#{@base}' filter='#{@filter}'")
+      conn.search(base, scope, filter, attrs) { |entry|
+        # print distinguished name
+        # p entry.dn
+        event = LogStash::Event.new
+        decorate(event)
+        event["host"] = @host
+        entry.get_attributes.each do |attr|
+        #values = entry.get_values(attr).first
+        values = entry.get_values(attr)
+        values = values.map { |value|
+            (/[^[:print:]]/ =~ value).nil? ? value : Base64.strict_encode64(value)
+        }
+        event[attr] = values
+        end
+        #event["attr"] = entry.attrs
+        queue << event
+          
+      }
+    rescue LDAP::ResultError => ex
+      @logger.error("LDAP search error: #{ex}\n#{ex.backtrace}")
+      exit
+    end
+    finished
   end # def run
 
-end # class LogStash::Inputs::Example
+end # class LogStash::Inputs::LDAPSearch
