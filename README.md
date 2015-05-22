@@ -19,6 +19,18 @@ Need help? Try #logstash on freenode IRC or the logstash-users@googlegroups.com 
 
 ### 1. Plugin Developement and Testing
 
+
+#### To make bundle install work
+- I need to install rvm before :
+```sh
+    # gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+    # curl -sSL https://get.rvm.io | bash -s stable --ruby
+```
+- then I need to install jruby
+```sh
+    # sudo rvm install jruby
+```
+ 
 #### Code
 - To get started, you'll need JRuby with the Bundler gem installed.
 
