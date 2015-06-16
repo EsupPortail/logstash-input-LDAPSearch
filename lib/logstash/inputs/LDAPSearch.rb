@@ -36,8 +36,9 @@ class LogStash::Inputs::LDAPSearch < LogStash::Inputs::Base
 
   public
   def register
-    require "base64"
-    require "ldap"
+    require 'base64'
+    require 'rubygems'
+    require 'ldap'
   end # def register
 
   public
