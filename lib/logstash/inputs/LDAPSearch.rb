@@ -32,6 +32,7 @@ class LogStash::Inputs::LDAPSearch < LogStash::Inputs::Base
   config :filter, :validate => :string, :required => true
   config :base, :validate => :string, :required => true
   config :port, :validate => :number, :default => 389
+	config :usessl, :validate => :boolean, :default => false
   config :attrs, :validate => :array, :default => ['uid']
 
   public
@@ -47,9 +48,9 @@ class LogStash::Inputs::LDAPSearch < LogStash::Inputs::Base
     @host = Socket.gethostbyname(@host).first
     #attrs = ['uid', 'sn', 'cn', 'eduPersonPrimaryAffiliation']
     scope = LDAP::LDAP_SCOPE_SUBTREE #LDAP::LDAP_SCOPE_ONELEVEL
-    conn = LDAP::Conn.new(@host, @port)
-    conn.bind(@dn, @password.value)
     begin
+			conn = ( @usessl == true ) ? LDAP::SSLConn.new(@host,@port) : LDAP::Conn.new(@host, @port)
+			conn.bind(@dn, @password.value)
       @logger.debug("Executing LDAP search base='#{@base}' filter='#{@filter}'")
       conn.search(base, scope, filter, attrs) { |entry|
         # print distinguished name
@@ -58,22 +59,25 @@ class LogStash::Inputs::LDAPSearch < LogStash::Inputs::Base
         decorate(event)
         event["host"] = @host
         entry.get_attributes.each do |attr|
-        #values = entry.get_values(attr).first
-        values = entry.get_values(attr)
-        values = values.map { |value|
+					#values = entry.get_values(attr).first
+					values = entry.get_values(attr)
+					values = values.map { |value|
             (/[^[:print:]]/ =~ value).nil? ? value : Base64.strict_encode64(value)
-        }
-        event[attr] = values
-        end
-        #event["attr"] = entry.attrs
-        queue << event
-          
-      }
-    rescue LDAP::ResultError => ex
-      @logger.error("LDAP search error: #{ex}\n#{ex.backtrace}")
-      exit
+					}
+					event[attr] = values
+				end
+				#event["attr"] = entry.attrs
+				queue << event
+			}
+		rescue LDAP::Error => ex
+			@logger.error("Ldap connect failed: #{ex}\n#{ex.backtrace}")
+			exit
+		rescue LDAP::ResultError => ex
+			@logger.error("LDAP search error: #{ex}\n#{ex.backtrace}")
+			exit
     end
-    finished
+		# no finished in 2.1, instead stop method is called
+    # finished
   end # def run
 
 end # class LogStash::Inputs::LDAPSearch
