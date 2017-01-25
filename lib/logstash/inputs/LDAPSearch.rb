@@ -57,14 +57,14 @@ class LogStash::Inputs::LDAPSearch < LogStash::Inputs::Base
         # p entry.dn
         event = LogStash::Event.new
         decorate(event)
-        event["host"] = @host
+        event.set("host", @host)
         entry.get_attributes.each do |attr|
 					#values = entry.get_values(attr).first
 					values = entry.get_values(attr)
 					values = values.map { |value|
             (/[^[:print:]]/ =~ value).nil? ? value : Base64.strict_encode64(value)
 					}
-					event[attr] = values
+					event.set(attr,values);
 				end
 				#event["attr"] = entry.attrs
 				queue << event
