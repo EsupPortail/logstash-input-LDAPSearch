@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.name            = 'logstash-input-LDAPSearch'
   s.version         = '0.2.0'
   s.licenses        = ['Apache-2.0']
-  s.summary         = 'logstash input plugin to perform search into ldap.''
+  s.summary         = 'logstash input plugin to perform search into ldap.'
   s.description     = 'This gem is a logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/plugin install gemname. This gem is not a stand-alone program'
   s.authors         = ['Jean-Albert Vescovo']
   s.email           = 'jean-albert.vescovo@univ-lyon3.fr'
