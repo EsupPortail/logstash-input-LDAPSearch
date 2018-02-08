@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.description     = 'This gem is a logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/plugin install gemname. This gem is not a stand-alone program'
   s.authors         = ['Jean-Albert Vescovo']
   s.email           = 'jean-albert.vescovo@univ-lyon3.fr'
-  s.homepage        = 'https://github.com/rodjeur69/logstash-input-LDAPSearch' #'http://www.elastic.co/guide/en/logstash/current/index.html'
+  s.homepage        = 'https://github.com/pilyon3/logstash-input-LDAPSearch' #'http://www.elastic.co/guide/en/logstash/current/index.html'
   s.require_paths = ['lib']
 
   # Files
