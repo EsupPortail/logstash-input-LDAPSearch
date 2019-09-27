@@ -6,9 +6,9 @@ It is fully free and fully open source. The license is Apache 2.0, meaning you a
 
 # Remarks for version 0.2.x
 
-This plugin is a fork of EsupPortail/logstash-input-LDAPSearch project (https://github.com/EsupPortail/logstash-input-LDAPSearch) initialy developped by Nicolas Can (nicolas.can@univ-lille1.fr).
+This version was developped by [pilyon3](https://github.com/pilyon3).
 
-The main goals of this fork is:
+The main goals of this version is:
   - to replace the use of ruby-ldap library by ruby-net-ldap, which permit natively to override MS ActiveDirectory MaxPageSize limitation of 5000 results by default introduced with Windows Server 2008
   - to make it compatible with Logstash version 5.0 and higher
 
