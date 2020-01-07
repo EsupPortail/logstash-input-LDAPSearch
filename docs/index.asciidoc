@@ -1,0 +1,136 @@
+:plugin: LDAPSearch
+:type: input
+:default_codec: plain
+
+///////////////////////////////////////////
+START - GENERATED VARIABLES, DO NOT EDIT!
+///////////////////////////////////////////
+:version: %VERSION%
+:release_date: %RELEASE_DATE%
+:changelog_url: %CHANGELOG_URL%
+:include_path: ../../../../logstash/docs/include
+///////////////////////////////////////////
+END - GENERATED VARIABLES, DO NOT EDIT!
+///////////////////////////////////////////
+
+[id="plugins-{type}s-{plugin}"]
+
+=== LDAPSearch input plugin
+
+include::{include_path}/plugin_header.asciidoc[]
+
+==== Description
+
+
+Filter a subset of entries from LDAP Server and generate an event by entry retrieved.
+Each entry contains the attributes defined in the attrs array.
+
+
+==== Usage:
+
+Here is an example of setting up the plugin to fetch data from a LDAP Server.
+
+[source,ruby]
+------------------------------------------------------------------------------
+input {
+  LDAPSearch {
+    host => "ldap.domain.fr"
+    dn => "cn=logstash,ou=system,dc=domain,dc=fr"
+    password => "XXXXXXXXX"
+    filter => "(&(objectclass=person)(cn=doe*))"
+    base => "ou=people,dc=domain,dc=fr"
+    attrs => ['uid', 'mail' ]
+  }
+}
+------------------------------------------------------------------------------
+
+
+[id="plugins-{type}s-{plugin}-options"]
+==== LDAPSearch Input Configuration Options
+
+This plugin supports the following configuration options.
+
+[cols="<,<,<",options="header",]
+|=======================================================================
+|Setting |Input type|Required
+| <<plugins-{type}s-{plugin}-attrs>> |<<array,array>>|No
+| <<plugins-{type}s-{plugin}-base>> |<<string,string>>|Yes
+| <<plugins-{type}s-{plugin}-dn>> |<<string,string>>|Yes
+| <<plugins-{type}s-{plugin}-filter>> |<<string,string>>|Yes
+| <<plugins-{type}s-{plugin}-host>> |<<string,string>>|Yes
+| <<plugins-{type}s-{plugin}-password>> |<<password,password>>|Yes
+| <<plugins-{type}s-{plugin}-port>> |<<number,number>>|No
+| <<plugins-{type}s-{plugin}-usessl>> |<<boolean,boolean>>|No
+|=======================================================================
+
+&nbsp;
+
+[id="plugins-{type}s-{plugin}-attrs"]
+===== `attrs`
+
+  * Value type is <<array,array>>
+  * Default value is `['uid']`
+
+
+
+[id="plugins-{type}s-{plugin}-base"]
+===== `base`
+
+  * This is a required setting.
+  * Value type is <<string,string>>
+  * There is no default value for this setting.
+
+
+
+[id="plugins-{type}s-{plugin}-dn"]
+===== `dn`
+
+  * This is a required setting.
+  * Value type is <<string,string>>
+  * There is no default value for this setting.
+
+
+[id="plugins-{type}s-{plugin}-filter"]
+===== `filter`
+
+  * This is a required setting.
+  * Value type is <<string,string>>
+  * There is no default value for this setting.
+
+
+[id="plugins-{type}s-{plugin}-host"]
+===== `host`
+
+  * This is a required setting.
+  * Value type is <<string,string>>
+  * There is no default value for this setting.
+
+
+[id="plugins-{type}s-{plugin}-password"]
+===== `password`
+
+  * This is a required setting.
+  * Value type is <<password,password>>
+  * There is no default value for this setting.
+
+
+[id="plugins-{type}s-{plugin}-port"]
+===== `port`
+
+  * Value type is <<number,number>>
+  * Default value is `389`
+
+
+[id="plugins-{type}s-{plugin}-usessl"]
+===== `usessl`
+
+  * Value type is <<boolean,boolean>>
+  * Default value is `false`
+
+
+
+[id="plugins-{type}s-{plugin}-common-options"]
+include::{include_path}/{type}.asciidoc[]
+
+:default_codec!:
+

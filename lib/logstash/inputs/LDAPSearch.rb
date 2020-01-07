@@ -1,8 +1,6 @@
 # encoding: utf-8
 require "logstash/inputs/base"
 require "logstash/namespace"
-require "stud/interval"
-require "socket"
 
 class LogStash::Inputs::LDAPSearch < LogStash::Inputs::Base
         config_name "LDAPSearch"
@@ -22,20 +20,11 @@ class LogStash::Inputs::LDAPSearch < LogStash::Inputs::Base
 
         public
         def register
-                require 'base64'
-                require 'rubygems'
                 require 'net/ldap'
         end # def register
 
         public
         def run(queue)
-                 begin
-                        @host = Socket.gethostbyname(@host).first
-                        #Managing Socket exception
-                        rescue SocketError => se
-                              puts "Got socket error: #{se}"
-                              exit
-                end
                 begin
                         if @usessl == true
                                 conn = Net::LDAP.new :host => @host,
@@ -70,7 +59,6 @@ class LogStash::Inputs::LDAPSearch < LogStash::Inputs::Base
                         conn.search( :filter => search_filter, :attributes => attrs ) { |entry|
                                 event = LogStash::Event.new
                                 decorate(event)
-                                event.set("host",@host)
                                 entry.attribute_names.each { |attr|
                                         # Changing attribute variable type returned by attribute_name method from Symbol to String
                                         attr = attr.to_s
